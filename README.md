@@ -1,5 +1,9 @@
 # 🎫 Painel de Senhas
 
+[![Repositório](https://img.shields.io/badge/GitHub-edielsonsilva%2FPainelSenha-181717?logo=github)](https://github.com/edielsonsilva/PainelSenha)
+[![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-green)](LICENSE)
+[![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+
 > Aplicativo **Blazor Server** para controle de senhas e filas de atendimento entre departamentos, construído em **.NET 10**, com emissão e impressão de senha, chamada em painel de TV com som, atendimento por guichê e gestão com histórico exportável para Excel.
 
 ---
@@ -23,7 +27,7 @@ Há um guichê por departamento. As senhas preferenciais são sempre chamadas an
 | `/conta` | Qualquer usuário logado | Trocar a própria senha |
 | `/health` | Monitoramento | Responde `Healthy` se o banco está acessível |
 
-Decisões de arquitetura: [PLANO-MVP.md](PLANO-MVP.md). Histórico de versões: [CHANGELOG.md](CHANGELOG.md). Telas originais do protótipo: `docs/`.
+Histórico de versões: [CHANGELOG.md](CHANGELOG.md). Scripts SQL das migrations: `docs/migrations/`.
 
 ---
 
@@ -60,7 +64,7 @@ PainelSenha/
 │   └── wwwroot/         # CSS global e favicon
 ├── tests/PainelSenhas.Tests/   # Testes de integração
 ├── scripts/                    # Publicação, serviço do Windows, backup e migrations
-├── docs/                       # Protótipo original e script SQL completo (docs/migrations)
+├── docs/migrations/            # Script SQL completo do SQL Server
 └── PainelSenhas.slnx
 ```
 
@@ -87,7 +91,7 @@ Requer o **SDK .NET 10** e o **SQL Server LocalDB** (instalado com o Visual Stud
 1. **Clone o repositório:**
 
    ```bash
-   git clone https://dev.azure.com/especialistanetcba/CCB_ADM/_git/PainelSenha
+   git clone https://github.com/edielsonsilva/PainelSenha.git
    cd PainelSenha
    ```
 
@@ -282,7 +286,13 @@ Abra `http://<servidor>:5000/painel` em um navegador atualizado na TV, clique em
 | `src/PainelSenhas.Web/Components` | Páginas, componentes globais, layout e componentes compartilhados |
 | `tests/PainelSenhas.Tests` | Testes de integração com xUnit v3, Shouldly e Respawn |
 | `scripts` | Publicação, serviço do Windows, backup e migrations |
-| `docs` | Protótipo original e script SQL completo do SQL Server |
+| `docs` | Script SQL completo do SQL Server (`docs/migrations`) |
+
+---
+
+## 📜 Licença
+
+Distribuído sob a licença [MIT](LICENSE).
 
 ---
 
@@ -312,6 +322,6 @@ Abra `http://<servidor>:5000/painel` em um navegador atualizado na TV, clique em
   <img src="https://img.shields.io/badge/Shouldly-2088FF?style=for-the-badge&logo=checkmarx&logoColor=white" />
   <img src="https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white" />
   <img src="https://img.shields.io/badge/Sqlite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" />
-  <img src="https://img.shields.io/badge/Azure_DevOps-0078D7?style=for-the-badge&logo=azure-devops&logoColor=white" />
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
   <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" />
 </p>
