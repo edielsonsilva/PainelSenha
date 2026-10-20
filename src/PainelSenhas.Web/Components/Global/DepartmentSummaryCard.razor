@@ -1,0 +1,31 @@
+<MudCard Outlined="true" Class="@CardClass">
+    <MudCardContent>
+        <div class="d-flex align-center justify-space-between gap-3">
+            <div>
+                <MudText Typo="Typo.subtitle1" Color="@(Selected ? Color.Inherit : Color.Primary)">@Department.Name</MudText>
+                <MudText Typo="Typo.caption" Color="@(Selected ? Color.Inherit : Color.Secondary)">
+                    @Department.Prefix · @Department.Desk
+                </MudText>
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.AccountTree" Color="@(Selected ? Color.Inherit : Color.Primary)" />
+        </div>
+
+        <MudDivider Class="my-3" />
+
+        @if (ShowCurrent)
+        {
+            <div class="d-flex align-center justify-space-between">
+                <MudText Typo="Typo.body2">Em atendimento</MudText>
+                <MudText Typo="Typo.h6">@(Department.CurrentCode ?? "Guichê livre")</MudText>
+            </div>
+            <div class="d-flex align-center justify-space-between">
+                <MudText Typo="Typo.body2">Fila: @Department.Pending</MudText>
+                <MudText Typo="Typo.body2">Concluídas: @Department.Completed</MudText>
+            </div>
+        }
+        else
+        {
+            <MudText Typo="Typo.body2">@Department.Pending em fila</MudText>
+        }
+    </MudCardContent>
+</MudCard>

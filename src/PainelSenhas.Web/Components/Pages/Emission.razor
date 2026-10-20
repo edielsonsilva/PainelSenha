@@ -1,0 +1,75 @@
+@page "/emissao"
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reception}")]
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Emissão • Senha</PageTitle>
+
+<div class="no-print">
+    <MudText Typo="Typo.overline" Color="Color.Primary">RECEPÇÃO</MudText>
+    <MudText Typo="Typo.h4" Class="mb-1">Emitir senha</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        @Clock.Today.ToString("dd/MM/yyyy") · Toque no departamento para emitir e imprimir a senha. Idosos, gestantes, pessoas com deficiência e demais casos previstos em lei usam o botão Preferencial, que é chamado antes das senhas comuns.
+    </MudText>
+
+    <FeedbackAlert Error="@Error" />
+</div>
+
+@if (Loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+}
+else
+{
+    <MudGrid Spacing="4">
+        <MudItem xs="12" lg="8" Class="no-print">
+            @if (_departments.Count == 0)
+            {
+                <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">Nenhum departamento disponível. Consulte a gestão.</MudAlert>
+            }
+            else
+            {
+                <MudGrid Spacing="3">
+                    @foreach (var department in _departments)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <DepartmentIssueButton Department="department"
+                                                   Issuing="@(Busy && _issuing == (department.Id, false))"
+                                                   JustIssued="@(_locked && _issuing == (department.Id, false))"
+                                                   Disabled="@((Busy || _locked) && _issuing != (department.Id, false))"
+                                                   OnIssue="@(id => IssueAsync(id, false))" />
+                            <DepartmentIssueButton Department="department"
+                                                   Preferential="true"
+                                                   Issuing="@(Busy && _issuing == (department.Id, true))"
+                                                   JustIssued="@(_locked && _issuing == (department.Id, true))"
+                                                   Disabled="@((Busy || _locked) && _issuing != (department.Id, true))"
+                                                   OnIssue="@(id => IssueAsync(id, true))" />
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </MudItem>
+
+        <MudItem xs="12" lg="4" Class="receipt-column">
+            <MudCard Outlined="true" Class="pa-4">
+                <MudText Typo="Typo.h6" Color="Color.Primary" Class="no-print">Última senha emitida</MudText>
+                @if (_issued is null)
+                {
+                    <MudText Typo="Typo.body2" Class="mt-2 no-print">Nenhuma senha emitida nesta sessão.</MudText>
+                }
+                else
+                {
+                    <TicketReceipt Ticket="_issued" Layout="@PrintLayout" />
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.Print"
+                               Class="no-print"
+                               OnClick="PrintAsync">
+                        Reimprimir
+                    </MudButton>
+                }
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}

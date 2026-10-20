@@ -1,0 +1,21 @@
+<MudTabs Elevation="0"
+         Rounded="true"
+         Border="true"
+         ApplyEffectsToContainer="true"
+         Class="mb-4"
+         ActivePanelIndex="ActiveIndex"
+         ActivePanelIndexChanged="ChangeAsync">
+    @foreach (var department in Departments)
+    {
+        <MudTabPanel>
+            <TabContent>
+                <span class="tab-label">
+                    <span class="tab-name">@department.Name</span>
+                    <span class="tab-meta">
+                        @department.Pending na fila@(department.CurrentCode is null ? "" : $" · atendendo {department.CurrentCode}")
+                    </span>
+                </span>
+            </TabContent>
+        </MudTabPanel>
+    }
+</MudTabs>

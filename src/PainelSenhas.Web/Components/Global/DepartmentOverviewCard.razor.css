@@ -1,0 +1,36 @@
+.overview-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.overview-prefix {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.overview-state {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--mud-palette-background);
+}
+
+.overview-since {
+    font-size: 0.9rem;
+    font-weight: 400;
+    opacity: 0.75;
+}
+
+.overview-lines {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}

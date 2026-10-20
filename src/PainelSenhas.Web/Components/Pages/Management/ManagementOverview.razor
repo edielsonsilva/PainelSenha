@@ -1,0 +1,67 @@
+@page "/gestao"
+@page "/gestao/visao-geral"
+@attribute [Authorize(Roles = Roles.Admin)]
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Gestão • Senha</PageTitle>
+
+<ManagementShell Area="@ManagementShell.Overview">
+    <FeedbackAlert Error="@Error" />
+
+    @if (_overview is null)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else
+    {
+        <MudText Typo="Typo.body2" Class="mb-3">
+            Hoje, @_overview.Date.ToString("dd/MM/yyyy") · atualizado às @Clock.Local(_updatedAtUtc).ToString("HH:mm:ss") (acompanha as chamadas em tempo real)
+        </MudText>
+
+        <MudGrid Spacing="2" Class="mb-4">
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Emitidas hoje" Value="@_overview.Totals.Issued.ToString()" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Na fila agora" Value="@_overview.Totals.Pending.ToString()" Caption="Todas as datas" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Em atendimento" Value="@_overview.Totals.InService.ToString()" Caption="@($"de {_overview.Departments.Count} guichês")" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Maior espera agora" Value="@DurationFormat.Minutes(_overview.Totals.LongestWaitMinutes)"
+                         Caption="Senha mais antiga na fila" Alert="@(_overview.Totals.LongestWaitMinutes >= LongWaitMinutes)" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Concluídas" Value="@_overview.Totals.Completed.ToString()" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Ausentes" Value="@_overview.Totals.Absent.ToString()" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Espera média" Value="@DurationFormat.Minutes(_overview.Totals.AverageWaitMinutes)" Caption="Da emissão à chamada" />
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <KpiTile Label="Atendimento médio" Value="@DurationFormat.Minutes(_overview.Totals.AverageServiceMinutes)" Caption="Da chamada à conclusão" />
+            </MudItem>
+        </MudGrid>
+
+        <MudText Typo="Typo.h6" Class="mb-2">Departamentos</MudText>
+        @if (_overview.Departments.Count == 0)
+        {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Nenhum departamento ativo. Cadastre em Departamentos.</MudAlert>
+        }
+        else
+        {
+            <MudGrid Spacing="3">
+                @foreach (var department in _overview.Departments)
+                {
+                    <MudItem xs="12" md="6" xl="4">
+                        <DepartmentOverviewCard Data="department" LongWaitMinutes="LongWaitMinutes" />
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    }
+</ManagementShell>

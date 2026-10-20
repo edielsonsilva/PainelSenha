@@ -1,0 +1,72 @@
+<MudPaper Outlined="true" Class="pa-4 rounded-lg h-100">
+    <div class="overview-head">
+        <span class="overview-prefix">@Data.Prefix</span>
+        <div>
+            <MudText Typo="Typo.h6">@Data.Name</MudText>
+            <MudText Typo="Typo.caption">@Data.Desk</MudText>
+        </div>
+    </div>
+
+    <div class="overview-state">
+        @if (Data.CurrentCode is { } currentCode)
+        {
+            <MudText Typo="Typo.overline" Color="Color.Primary">EM ATENDIMENTO</MudText>
+            <MudText Typo="Typo.h5">@currentCode <span class="overview-since">há @DurationFormat.Minutes(Data.CurrentMinutes)</span></MudText>
+        }
+        else if (Data.Pending > 0)
+        {
+            <MudText Typo="Typo.overline" Color="Color.Warning">GUICHÊ LIVRE COM FILA</MudText>
+            <MudText Typo="Typo.h5">Aguardando chamada</MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.overline" Color="Color.Success">GUICHÊ LIVRE</MudText>
+            <MudText Typo="Typo.h5">Fila vazia</MudText>
+        }
+    </div>
+
+    <MudGrid Spacing="1" Class="mt-2">
+        <MudItem xs="3">
+            <MudText Typo="Typo.h5">@Data.Pending</MudText>
+            <MudText Typo="Typo.caption">Na fila</MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText Typo="Typo.h5">@Data.Issued</MudText>
+            <MudText Typo="Typo.caption">Emitidas</MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText Typo="Typo.h5">@Data.Completed</MudText>
+            <MudText Typo="Typo.caption">Concluídas</MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText Typo="Typo.h5">@Data.Absent</MudText>
+            <MudText Typo="Typo.caption">Ausentes</MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-3" />
+
+    <div class="overview-lines">
+        <div>
+            <MudText Typo="Typo.caption">Mais antiga na fila</MudText>
+            <MudText Typo="Typo.body2" Color="@(IsLongWait ? Color.Warning : Color.Default)">
+                <strong>@DurationFormat.Minutes(Data.OldestWaitMinutes)</strong>
+            </MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.caption">Espera média</MudText>
+            <MudText Typo="Typo.body2"><strong>@DurationFormat.Minutes(Data.AverageWaitMinutes)</strong></MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.caption">Atendimento médio</MudText>
+            <MudText Typo="Typo.body2"><strong>@DurationFormat.Minutes(Data.AverageServiceMinutes)</strong></MudText>
+        </div>
+    </div>
+
+    @if (Data.PendingFromPreviousDays > 0)
+    {
+        <MudText Typo="Typo.caption" Color="Color.Warning" Class="mt-2 d-block">
+            @Data.PendingFromPreviousDays @(Data.PendingFromPreviousDays == 1 ? "senha" : "senhas") de dias anteriores na fila.
+        </MudText>
+    }
+</MudPaper>

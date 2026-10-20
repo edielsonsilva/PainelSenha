@@ -1,0 +1,114 @@
+@page "/painel"
+@page "/painel-chamada"
+@attribute [AllowAnonymous]
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Painel de chamadas • Senha</PageTitle>
+
+<MudAppBar Color="Color.Primary" Fixed="false" Elevation="4" Class="rounded-lg px-4 mb-4">
+    <div class="d-flex align-center gap-3 mud-width-full">
+        <MudIcon Icon="@Icons.Material.Filled.Dashboard" Color="Color.Inherit" Size="Size.Large" />
+        <MudText Typo="Typo.h5" Color="Color.Inherit">Painel único de atendimento</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.subtitle1" Color="Color.Inherit">@Clock.Local(Clock.UtcNow).ToString("dd/MM/yyyy HH:mm")</MudText>
+        <MudButton Variant="Variant.Outlined" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.VolumeUp" OnClick="EnableSoundAsync">
+            @(_sound ? "Som ativado" : "Ativar som")
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Fullscreen" OnClick="FullscreenAsync">
+            Tela cheia
+        </MudButton>
+    </div>
+</MudAppBar>
+
+<FeedbackAlert Error="@Error" />
+
+<MudGrid Spacing="4">
+    <MudItem xs="12" lg="8">
+        @* A chave recria o card a cada chamada nova, o que reinicia a animação de destaque *@
+        <div class="board-stage">
+        <MudCard @key="Current?.EventId" Class="@($"pa-6 mud-theme-primary rounded-lg board-hero {BlinkClass}")" aria-live="polite">
+            <MudCardContent>
+                <div class="d-flex flex-column align-center justify-center py-6">
+                    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">SENHA CHAMADA</MudText>
+                    <div class="board-number">@(Current?.Code ?? "---")</div>
+                    @if (Current is { IsPreferential: true })
+                    {
+                        <MudChip T="string" Size="Size.Large" Color="Color.Secondary" Icon="@Icons.Material.Filled.Accessible" Class="mt-2">PREFERENCIAL</MudChip>
+                    }
+                    <MudPaper Class="px-8 py-3 mt-4 rounded-pill" Elevation="0">
+                        <MudText Typo="Typo.h4" Align="Align.Center" Color="Color.Primary">
+                            @(Current?.Department ?? "Nenhuma chamada em andamento")
+                        </MudText>
+                    </MudPaper>
+                    @if (Current is not null)
+                    {
+                        <MudText Typo="Typo.h5" Align="Align.Center" Class="mt-3">@Current.Desk</MudText>
+                    }
+                    <MudText Typo="Typo.body1" Align="Align.Center" Class="mt-3">
+                        @(Current is null ? "Aguardando a primeira chamada" : Current.IsRepeat ? "Chamando novamente. Dirija-se ao guichê indicado." : "Dirija-se ao guichê indicado.")
+                    </MudText>
+                </div>
+            </MudCardContent>
+        </MudCard>
+        </div>
+    </MudItem>
+
+    <MudItem xs="12" lg="4">
+        <MudCard Class="pa-4" Outlined="true">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <div class="d-flex align-center gap-2">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountTree" Color="Color.Primary" />
+                        <MudText Typo="Typo.h6" Color="Color.Primary">Resumo dos departamentos</MudText>
+                    </div>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent Class="d-flex flex-column gap-3">
+                @foreach (var department in _board.Departments)
+                {
+                    <DepartmentSummaryCard Department="department" ShowCurrent="true"
+                                           Selected="@(department.CurrentCode is not null && department.CurrentCode == Current?.Code)" />
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudCard Class="pa-2" Outlined="true">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <div class="d-flex align-center gap-2">
+                        <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Default" />
+                        <MudText Typo="Typo.h6" Color="Color.Primary">Chamadas anteriores</MudText>
+                    </div>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (_board.Calls.Count <= 1)
+                {
+                    <MudText Typo="Typo.body2" Class="pa-4">As próximas chamadas aparecerão aqui.</MudText>
+                }
+                else
+                {
+                    <MudGrid Spacing="2">
+                        @foreach (var call in _board.Calls.Skip(1))
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="2">
+                                <MudPaper Class="pa-4" Outlined="true" Elevation="0">
+                                    <MudText Typo="Typo.h4" Color="Color.Primary">@call.Code</MudText>
+                                    @if (call.IsPreferential)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Filled.Accessible">Preferencial</MudChip>
+                                    }
+                                    <MudText Typo="Typo.body1">@call.Department</MudText>
+                                    <MudText Typo="Typo.caption">@call.Desk · @Clock.Local(call.CalledUtc).ToString("HH:mm")</MudText>
+                                </MudPaper>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>

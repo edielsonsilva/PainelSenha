@@ -1,0 +1,22 @@
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="3">
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" role="alert">@_error</MudAlert>
+            }
+            <MudText Typo="Typo.body2">Departamentos que <strong>@User.UserName</strong> pode atender. A mudança vale na próxima ação do operador.</MudText>
+            <MudSelect T="int" Label="Departamentos que atende" Variant="Variant.Outlined" MultiSelection="true"
+                       @bind-SelectedValues="_selected" ToStringFunc="DepartmentLabel">
+                @foreach (var department in Departments.Where(x => x.Active))
+                {
+                    <MudSelectItem T="int" Value="@department.Id">@department.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="@_busy">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveAsync" Disabled="@_busy">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>

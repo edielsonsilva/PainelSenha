@@ -1,0 +1,48 @@
+@page "/gestao/departamentos"
+@attribute [Authorize(Roles = Roles.Admin)]
+@using PainelSenhas.Web.Features.Gestao
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Departamentos • Gestão • Senha</PageTitle>
+<UiProviders />
+
+<ManagementShell Area="@ManagementShell.Departments">
+    <FeedbackAlert Error="@Error" Message="@Message" />
+
+    <div class="d-flex flex-wrap align-center justify-space-between gap-3 mb-3">
+        <MudText Typo="Typo.body2">Cada departamento tem um guichê. Departamentos com histórico não são excluídos: use a edição para inativá-los.</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Disabled="@Busy" OnClick="() => OpenAsync(null)">
+            Novo departamento
+        </MudButton>
+    </div>
+
+    <MudTable T="DepartmentView" Items="_departments" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Outlined="true">
+        <HeaderContent>
+            <MudTh>Prefixo</MudTh>
+            <MudTh>Departamento</MudTh>
+            <MudTh>Guichê</MudTh>
+            <MudTh>Na fila</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh Style="text-align: right">Ações</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Prefixo"><MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">@context.Prefix</MudChip></MudTd>
+            <MudTd DataLabel="Departamento"><strong>@context.Name</strong></MudTd>
+            <MudTd DataLabel="Guichê">@context.Desk</MudTd>
+            <MudTd DataLabel="Na fila">@context.Pending</MudTd>
+            <MudTd DataLabel="Status">
+                <MudChip T="string" Size="Size.Small" Color="@(context.Active ? Color.Success : Color.Default)">@(context.Active ? "Ativo" : "Inativo")</MudChip>
+            </MudTd>
+            <MudTd Style="text-align: right">
+                <MudTooltip Text="Editar departamento">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" aria-label="Editar departamento"
+                                   Disabled="@Busy" OnClick="() => OpenAsync(context)" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText Typo="Typo.body2" Class="pa-4">Nenhum departamento cadastrado.</MudText>
+        </NoRecordsContent>
+    </MudTable>
+</ManagementShell>

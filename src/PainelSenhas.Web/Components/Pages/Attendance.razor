@@ -1,0 +1,146 @@
+@page "/atendimento"
+@page "/atendimento/{Prefix}"
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Operator}")]
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Atendimento • Senha</PageTitle>
+
+<div class="attendance">
+
+<MudText Typo="Typo.overline" Color="Color.Primary">ÁREA DO OPERADOR</MudText>
+<MudText Typo="Typo.h4" Class="mb-3">Atendimento</MudText>
+
+<FeedbackAlert Error="@Error" Message="@Message" />
+
+@if (Loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+}
+else if (_departments.Count == 0)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+        Nenhum departamento vinculado ao seu acesso. Peça ao administrador.
+    </MudAlert>
+}
+else if (Selected is null)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mb-3">
+        Você não tem acesso ao departamento “@Prefix”.
+    </MudAlert>
+    <MudButton Href="@($"/atendimento/{_departments[0].Prefix}")" Variant="Variant.Filled" Color="Color.Primary">
+        Ir para @_departments[0].Name
+    </MudButton>
+}
+else
+{
+    if (_departments.Count > 1)
+    {
+        <DepartmentTabs Departments="_departments" SelectedPrefix="@Selected.Prefix" OnSelect="SelectDepartment" />
+    }
+    else
+    {
+        <MudPaper Class="px-4 py-2 mb-4 mud-theme-primary rounded-lg d-inline-block">
+            <MudText Typo="Typo.subtitle1" Color="Color.Inherit">@Selected.Name · @Selected.Desk</MudText>
+        </MudPaper>
+    }
+
+    if (_view is not null)
+    {
+        <MudGrid Spacing="4">
+            <MudItem xs="12" md="7">
+                @if (_view.Active is { } active)
+                {
+                    <MudPaper Class="pa-6 mud-theme-primary rounded-lg">
+                        <MudText Typo="Typo.overline" Color="Color.Inherit">EM ATENDIMENTO · @Selected.Desk</MudText>
+                        <div class="ticket-code">@active.Code</div>
+                        @if (active.IsPreferential)
+                        {
+                            <MudChip T="string" Size="Size.Medium" Color="Color.Secondary" Icon="@Icons.Material.Filled.Accessible" Class="mb-2">Preferencial</MudChip>
+                        }
+                        <MudText Typo="Typo.body1" Color="Color.Inherit">
+                            @active.Department · chamada às @Clock.Local(active.CalledUtc!.Value).ToString("HH:mm") (@active.Date.ToString("dd/MM/yyyy"))
+                        </MudText>
+                    </MudPaper>
+
+                    <MudStack Spacing="2" Class="mt-3">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" Class="action-button"
+                                   StartIcon="@Icons.Material.Filled.CheckCircle" Disabled="@Busy"
+                                   OnClick="() => ActAsync(EventKind.Completed)">
+                            Concluir atendimento
+                        </MudButton>
+                        <MudStack Row="true" Spacing="2">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" FullWidth="true" Class="action-button"
+                                       StartIcon="@Icons.Material.Filled.PersonOff" Disabled="@Busy"
+                                       OnClick="() => ActAsync(EventKind.Absent)">
+                                Não compareceu
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" FullWidth="true" Class="action-button"
+                                       StartIcon="@Icons.Material.Filled.Replay" Disabled="@Busy"
+                                       OnClick="() => ActAsync(EventKind.Repeated)">
+                                Repetir chamada
+                            </MudButton>
+                        </MudStack>
+                    </MudStack>
+                }
+                else
+                {
+                    <MudPaper Class="pa-6 rounded-lg" Outlined="true">
+                        <MudText Typo="Typo.overline" Color="Color.Primary">GUICHÊ LIVRE · @Selected.Desk</MudText>
+                        @if (NextCode is null)
+                        {
+                            <MudText Typo="Typo.h3" Class="my-4">Fila vazia</MudText>
+                            <MudText Typo="Typo.body1">Nenhuma senha aguardando neste departamento.</MudText>
+                        }
+                        else
+                        {
+                            <div class="ticket-code ticket-code-idle">@NextCode</div>
+                            <MudText Typo="Typo.body1">
+                                @(_view.Pending[0].IsPreferential ? "Próxima senha da fila (preferencial)." : "Próxima senha da fila.")
+                            </MudText>
+                        }
+                    </MudPaper>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Large" FullWidth="true" Class="action-button mt-3"
+                               StartIcon="@Icons.Material.Filled.VolumeUp" Disabled="@(Busy || NextCode is null)"
+                               OnClick="CallNextAsync">
+                        Chamar próxima@(NextCode is null ? "" : $" ({NextCode})")
+                    </MudButton>
+                }
+            </MudItem>
+
+            <MudItem xs="12" md="5">
+                <CountersRow Pending="Selected.Pending" Completed="Selected.Completed" Absent="Selected.Absent" />
+
+                <MudCard Outlined="true" Class="mt-3">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">Próximas senhas</MudText>
+                            <MudText Typo="Typo.caption">Preferenciais são chamadas primeiro.</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="queue-scroll">
+                        <TicketTable Items="_view.Pending" Mode="TicketTableMode.Pending" EmptyText="Não há senhas na fila." />
+                        @if (_view.Pending.Count == 50)
+                        {
+                            <MudText Typo="Typo.caption">Exibindo as primeiras 50 senhas.</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+
+                <MudCard Outlined="true" Class="mt-3">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">Atendidas recentemente</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <TicketTable Items="_view.Recent" Mode="TicketTableMode.History" EmptyText="Sem histórico para este departamento." />
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
+}
+
+</div>

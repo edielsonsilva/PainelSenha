@@ -1,0 +1,14 @@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+                    <MudText Typo="Typo.h4" Class="mb-2">Acesso restrito</MudText>
+                    <MudText Typo="Typo.body1" Class="mb-4">Entre com a sua conta para continuar. Se já entrou, seu perfil não tem acesso a esta área.</MudText>
+                    <MudButton Href="/entrar" Variant="Variant.Filled" Color="Color.Primary">Entrar no sistema</MudButton>
+                </MudContainer>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

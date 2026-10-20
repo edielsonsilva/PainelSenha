@@ -1,0 +1,8 @@
+<MudPaper Outlined="true" Class="pa-4 rounded-lg h-100" Style="@(Alert ? "border-color: var(--mud-palette-warning); border-width: 2px;" : null)">
+    <MudText Typo="Typo.caption" Color="@(Alert ? Color.Warning : Color.Default)">@Label</MudText>
+    <MudText Typo="Typo.h4" Color="@(Alert ? Color.Warning : Color.Default)">@Value</MudText>
+    @if (!string.IsNullOrWhiteSpace(Caption))
+    {
+        <MudText Typo="Typo.caption" Style="display: block; opacity: 0.7;">@Caption</MudText>
+    }
+</MudPaper>

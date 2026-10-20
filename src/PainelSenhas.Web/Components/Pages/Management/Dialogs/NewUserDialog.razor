@@ -1,0 +1,45 @@
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="3">
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" role="alert">@_error</MudAlert>
+            }
+            <MudTextField T="string" Label="Usuário" Variant="Variant.Outlined" MaxLength="100" @bind-Value="_username" Immediate="true"
+                          HelperText="Letras, números e . _ @@ + -" />
+            <MudTextField T="string" Label="Senha de acesso" Variant="Variant.Outlined" @bind-Value="_password" Immediate="true"
+                          InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                          Adornment="Adornment.End" AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                          OnAdornmentClick="() => _showPassword = !_showPassword" AdornmentAriaLabel="Mostrar ou ocultar a senha"
+                          HelperText="Mínimo de 10 caracteres, com maiúscula, minúscula, número e símbolo." />
+            <MudButton Variant="Variant.Text" Size="Size.Small" StartIcon="@Icons.Material.Filled.AutoFixHigh" OnClick="GeneratePassword">
+                Gerar senha segura
+            </MudButton>
+            <MudSelect T="string" Label="Perfil" Variant="Variant.Outlined" @bind-Value="_role">
+                <MudSelectItem T="string" Value="@Roles.Operator">Operador de guichê</MudSelectItem>
+                <MudSelectItem T="string" Value="@Roles.Reception">Recepção</MudSelectItem>
+                <MudSelectItem T="string" Value="@Roles.Admin">Administrador</MudSelectItem>
+            </MudSelect>
+            @if (_role == Roles.Admin)
+            {
+                <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                    O administrador gerencia departamentos e equipe e atende qualquer departamento. Crie apenas para quem precisa desse acesso.
+                </MudAlert>
+            }
+            @if (_role == Roles.Operator)
+            {
+                <MudSelect T="int" Label="Departamentos que atende" Variant="Variant.Outlined" MultiSelection="true"
+                           @bind-SelectedValues="_selected" ToStringFunc="DepartmentLabel">
+                    @foreach (var department in Departments.Where(x => x.Active))
+                    {
+                        <MudSelectItem T="int" Value="@department.Id">@department.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="@_busy">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveAsync" Disabled="@_busy">Criar acesso</MudButton>
+    </DialogActions>
+</MudDialog>

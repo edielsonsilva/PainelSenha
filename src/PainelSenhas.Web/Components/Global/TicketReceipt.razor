@@ -1,0 +1,15 @@
+<style media="print">
+    @@page { size: @PageSize; margin: @PageMargin; }
+</style>
+
+<div class="@($"ticket-receipt {LayoutClass}")" id="ticket-receipt" aria-live="polite">
+    <span class="receipt-title">SENHA DE ATENDIMENTO</span>
+    <strong class="receipt-code">@Ticket.Code</strong>
+    @if (Ticket.IsPreferential)
+    {
+        <span class="receipt-preferential">PREFERENCIAL</span>
+    }
+    <span class="receipt-department">@Ticket.Department</span>
+    <span class="receipt-time">@IssuedText</span>
+    <small class="receipt-note">Aguarde ser chamado no painel.</small>
+</div>

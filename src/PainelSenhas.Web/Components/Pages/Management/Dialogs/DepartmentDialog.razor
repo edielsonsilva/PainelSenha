@@ -1,0 +1,23 @@
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="3">
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" role="alert">@_error</MudAlert>
+            }
+            <MudTextField T="string" Label="Nome do departamento" Variant="Variant.Outlined" MaxLength="80" @bind-Value="_name" Immediate="true" />
+            <MudTextField T="string" Label="Prefixo" Variant="Variant.Outlined" MaxLength="5" Placeholder="Ex.: T"
+                          HelperText="De 1 a 5 letras; aparece no código da senha (ex.: T-012)." @bind-Value="_prefix" Immediate="true" />
+            <MudTextField T="string" Label="Nome do guichê" Variant="Variant.Outlined" MaxLength="40" @bind-Value="_deskName" Immediate="true" />
+            @if (Department is not null)
+            {
+                <MudSwitch T="bool" Label="Departamento ativo" Color="Color.Primary" @bind-Value="_active"
+                           />
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="@_busy">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveAsync" Disabled="@_busy">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>

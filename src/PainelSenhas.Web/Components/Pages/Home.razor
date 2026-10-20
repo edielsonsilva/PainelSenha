@@ -1,0 +1,41 @@
+@page "/"
+@attribute [AllowAnonymous]
+
+<PageTitle>Senha • Atendimento</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-8">
+    <MudText Typo="Typo.overline" Color="Color.Primary">PAINEL DE SENHAS</MudText>
+    <MudText Typo="Typo.h2" Class="mb-2">Organize a espera.</MudText>
+    <MudText Typo="Typo.h2" Color="Color.Primary" Class="mb-4">Cuide do atendimento.</MudText>
+    <MudText Typo="Typo.h6" Class="mb-6">Emita senhas, acompanhe os departamentos e mantenha todos informados em um só lugar.</MudText>
+    <MudButton Href="/painel" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" EndIcon="@Icons.Material.Filled.ArrowForward">
+        Abrir painel de chamadas
+    </MudButton>
+
+    <MudGrid Spacing="3" Class="mt-8">
+        <MudItem xs="12" md="4">
+            <MudCard Outlined="true" Class="pa-4 h-100">
+                <MudText Typo="Typo.caption">01</MudText>
+                <MudText Typo="Typo.h5" Class="my-2">Emissão</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4">Receba o visitante e gere uma senha para o departamento.</MudText>
+                <MudButton Href="/emissao" Variant="Variant.Text" Color="Color.Primary">Emitir senha</MudButton>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudCard Outlined="true" Class="pa-4 h-100">
+                <MudText Typo="Typo.caption">02</MudText>
+                <MudText Typo="Typo.h5" Class="my-2">Atendimento</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4">Chame a próxima senha e acompanhe a fila do seu guichê.</MudText>
+                <MudButton Href="/atendimento" Variant="Variant.Text" Color="Color.Primary">Iniciar atendimento</MudButton>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudCard Outlined="true" Class="pa-4 h-100">
+                <MudText Typo="Typo.caption">03</MudText>
+                <MudText Typo="Typo.h5" Class="my-2">Gestão</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4">Consulte o histórico e organize departamentos e operadores.</MudText>
+                <MudButton Href="/gestao" Variant="Variant.Text" Color="Color.Primary">Acessar gestão</MudButton>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PainelSenhas.Web/PainelSenhas.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PainelSenhas.Tests/PainelSenhas.Tests.csproj" />
+  </Folder>
+</Solution>

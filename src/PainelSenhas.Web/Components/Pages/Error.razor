@@ -1,0 +1,29 @@
+@page "/Error"
+@attribute [AllowAnonymous]
+@using System.Diagnostics
+
+<PageTitle>Erro • Senha</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudText Typo="Typo.h4" Color="Color.Error" Class="mb-2">Ocorreu um erro.</MudText>
+    <MudText Typo="Typo.body1" Class="mb-4">Não foi possível concluir a solicitação. Tente novamente; se o problema continuar, avise o administrador.</MudText>
+    @if (ShowRequestId)
+    {
+        <MudText Typo="Typo.caption">Código da solicitação: <code>@RequestId</code></MudText>
+    }
+    <div class="mt-4">
+        <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary">Voltar ao início</MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

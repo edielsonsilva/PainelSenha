@@ -1,0 +1,8 @@
+@if (!string.IsNullOrWhiteSpace(Error))
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mb-4" role="alert">@Error</MudAlert>
+}
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Class="mb-4" role="status">@Message</MudAlert>
+}

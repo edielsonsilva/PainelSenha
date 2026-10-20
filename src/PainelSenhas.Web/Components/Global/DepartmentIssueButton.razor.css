@@ -1,0 +1,52 @@
+.issue-wrapper ::deep .issue-button {
+    min-height: 150px;
+    padding: 16px;
+    border-radius: 16px;
+    text-transform: none;
+}
+
+.issue-wrapper ::deep .issue-button-preferential {
+    min-height: 72px;
+    margin-top: 8px;
+    padding: 8px 16px;
+    border-width: 2px;
+}
+
+.issue-kind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.issue-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.issue-prefix {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.issue-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: normal;
+}
+
+.issue-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 24px;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}

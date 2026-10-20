@@ -1,0 +1,23 @@
+.ticket-code {
+    font-size: clamp(64px, 9vw, 112px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin: 8px 0;
+}
+
+.ticket-code-idle {
+    color: var(--mud-palette-primary);
+    opacity: 0.85;
+}
+
+.attendance ::deep .action-button {
+    min-height: 56px;
+    text-transform: none;
+    font-size: 1.05rem;
+}
+
+.attendance ::deep .queue-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+}

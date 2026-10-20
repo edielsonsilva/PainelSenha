@@ -1,0 +1,27 @@
+@page "/conta"
+@attribute [Authorize]
+
+<PageTitle>Minha conta • Senha</PageTitle>
+
+<MudPaper Class="pa-8 mx-auto my-8" Style="max-width: 470px" Outlined="true">
+    <MudText Typo="Typo.overline" Color="Color.Primary">MINHA CONTA</MudText>
+    <MudText Typo="Typo.h4" Class="mb-2">Trocar senha</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">Mínimo de 10 caracteres, com maiúscula, minúscula, número e símbolo.</MudText>
+
+    @if (Ok == "1")
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Class="mb-4" role="status">Senha alterada.</MudAlert>
+    }
+    @if (ErrorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mb-4" role="alert">@ErrorMessage</MudAlert>
+    }
+
+    <form method="post" action="/conta/senha" data-enhance="false" class="plain-form">
+        <AntiforgeryToken />
+        <label>Senha atual<input name="current" type="password" autocomplete="current-password" required /></label>
+        <label>Nova senha<input name="new" type="password" autocomplete="new-password" required /></label>
+        <label>Confirmar nova senha<input name="confirm" type="password" autocomplete="new-password" required /></label>
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true">Alterar senha</MudButton>
+    </form>
+</MudPaper>

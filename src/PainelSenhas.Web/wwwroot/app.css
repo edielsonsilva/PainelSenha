@@ -1,0 +1,72 @@
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Formulários de páginas sem interatividade (login e troca de senha): campos HTML simples no estilo do tema */
+.plain-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.plain-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.plain-form input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #b9c4be;
+    border-radius: 6px;
+    font: inherit;
+}
+
+.plain-form input:focus-visible {
+    outline: 3px solid #d8a544;
+    outline-offset: 1px;
+}
+
+#blazor-error-ui {
+    display: none;
+    background: #fff0d9;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    padding: 15px;
+    z-index: 1000;
+}
+
+/* Impressão do comprovante: só o bloco da senha aparece; o tamanho da página vem do componente TicketReceipt */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    .ticket-receipt,
+    .ticket-receipt * {
+        visibility: visible !important;
+    }
+
+    .ticket-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Coluna do comprovante na emissão: ao imprimir, ocupa a largura toda da página */
+@media print {
+    .receipt-column {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+}

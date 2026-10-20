@@ -1,0 +1,129 @@
+@page "/gestao/historico"
+@attribute [Authorize(Roles = Roles.Admin)]
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Histórico • Gestão • Senha</PageTitle>
+<UiProviders />
+
+<ManagementShell Area="@ManagementShell.History">
+    <FeedbackAlert Error="@Error" Message="@Message" />
+
+    <MudPaper Outlined="true" Class="pa-3 mb-4 rounded-lg">
+        <MudStack Spacing="3">
+            <MudToggleGroup T="HistoryPreset" Value="_preset" ValueChanged="SelectPresetAsync" Color="Color.Primary" Size="Size.Small"
+                            Outlined="true" Delimiters="true" CheckMark="true" Disabled="@Busy">
+                <MudToggleItem Value="HistoryPreset.Today" Text="Hoje" />
+                <MudToggleItem Value="HistoryPreset.Yesterday" Text="Ontem" />
+                <MudToggleItem Value="HistoryPreset.Last7Days" Text="7 dias" />
+                <MudToggleItem Value="HistoryPreset.Last30Days" Text="30 dias" />
+                <MudToggleItem Value="HistoryPreset.ThisMonth" Text="Este mês" />
+                <MudToggleItem Value="HistoryPreset.Custom" Text="Personalizado" />
+            </MudToggleGroup>
+
+            <MudGrid Spacing="2">
+                @if (_preset == HistoryPreset.Custom)
+                {
+                    <MudItem xs="6" md="2">
+                        <MudDatePicker Label="De" Variant="Variant.Outlined" Margin="Margin.Dense" Date="_from"
+                                       DateChanged="FromChangedAsync" DateFormat="dd/MM/yyyy" />
+                    </MudItem>
+                    <MudItem xs="6" md="2">
+                        <MudDatePicker Label="Até" Variant="Variant.Outlined" Margin="Margin.Dense" Date="_to"
+                                       DateChanged="ToChangedAsync" DateFormat="dd/MM/yyyy" />
+                    </MudItem>
+                }
+                <MudItem xs="12" sm="6" md="3">
+                    <MudSelect T="int" Label="Departamento" Variant="Variant.Outlined" Margin="Margin.Dense"
+                               Value="_filterDepartment" ValueChanged="DepartmentChangedAsync">
+                        <MudSelectItem T="int" Value="0">Todos os departamentos</MudSelectItem>
+                        @foreach (var department in _departments)
+                        {
+                            <MudSelectItem T="int" Value="@department.Id">@department.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudSelect T="int" Label="Status" Variant="Variant.Outlined" Margin="Margin.Dense"
+                               Value="_filterStatus" ValueChanged="StatusChangedAsync">
+                        <MudSelectItem T="int" Value="-1">Todos os status</MudSelectItem>
+                        @foreach (var status in Enum.GetValues<TicketStatus>())
+                        {
+                            <MudSelectItem T="int" Value="@((int)status)">@StatusLabel(status)</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="@(_preset == HistoryPreset.Custom ? 2 : 6)">
+                    <MudTextField T="string" Label="Buscar senha" Placeholder="Ex.: T-012" Variant="Variant.Outlined" Margin="Margin.Dense"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Immediate="true" DebounceInterval="500" Value="_search" ValueChanged="SearchChangedAsync" />
+                </MudItem>
+            </MudGrid>
+
+            <div class="d-flex flex-wrap align-center justify-space-between gap-2">
+                <MudText Typo="Typo.caption">Período: @PeriodText</MudText>
+                <MudButton Href="@ExportUrl" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.FileDownload" data-enhance-nav="false" download>
+                    Exportar para Excel
+                </MudButton>
+            </div>
+        </MudStack>
+    </MudPaper>
+
+    @if (_history is not null)
+    {
+        <MudGrid Spacing="2" Class="mb-4">
+            <MudItem xs="6" sm="4" md="2"><KpiTile Label="Total de senhas" Value="@_history.Total.ToString()" /></MudItem>
+            <MudItem xs="6" sm="4" md="2"><KpiTile Label="Concluídas" Value="@_history.Completed.ToString()" /></MudItem>
+            <MudItem xs="6" sm="4" md="2"><KpiTile Label="Ausentes" Value="@_history.Absent.ToString()" /></MudItem>
+            <MudItem xs="6" sm="4" md="2"><KpiTile Label="Ainda na fila" Value="@_history.Pending.ToString()" /></MudItem>
+            <MudItem xs="6" sm="4" md="2"><KpiTile Label="Espera média" Value="@DurationFormat.Minutes(_history.WaitMinutes)" Caption="Emissão à chamada" /></MudItem>
+            <MudItem xs="6" sm="4" md="2"><KpiTile Label="Atendimento médio" Value="@DurationFormat.Minutes(_history.ServiceMinutes)" Caption="Chamada à conclusão" /></MudItem>
+        </MudGrid>
+
+        <MudTable T="HistoryRow" Items="_history.Rows" Hover="true" Dense="true" Breakpoint="Breakpoint.Md" Elevation="0" Outlined="true">
+            <HeaderContent>
+                <MudTh><SortHeader Label="Senha" Active="@(_sort == HistorySort.Code)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Code)" /></MudTh>
+                <MudTh><SortHeader Label="Departamento" Active="@(_sort == HistorySort.Department)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Department)" /></MudTh>
+                <MudTh><SortHeader Label="Data" Active="@(_sort == HistorySort.Date)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Date)" /></MudTh>
+                <MudTh><SortHeader Label="Status" Active="@(_sort == HistorySort.Status)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Status)" /></MudTh>
+                <MudTh><SortHeader Label="Emissão" Active="@(_sort == HistorySort.Issued)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Issued)" /></MudTh>
+                <MudTh><SortHeader Label="Chamada" Active="@(_sort == HistorySort.Called)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Called)" /></MudTh>
+                <MudTh><SortHeader Label="Encerramento" Active="@(_sort == HistorySort.Closed)" Descending="_descending" OnClick="() => SortAsync(HistorySort.Closed)" /></MudTh>
+                <MudTh>Espera</MudTh>
+                <MudTh>Atendimento</MudTh>
+                <MudTh>Atendido por</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Senha"><strong>@context.Ticket.Code</strong></MudTd>
+                <MudTd DataLabel="Departamento">@context.Ticket.Department</MudTd>
+                <MudTd DataLabel="Data">@context.Ticket.Date.ToString("dd/MM/yyyy")</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Size="Size.Small" Color="@StatusColor(context.Ticket.Status)">@StatusLabel(context.Ticket.Status)</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Emissão">@Time(context.Ticket.IssuedUtc)</MudTd>
+                <MudTd DataLabel="Chamada">@Time(context.Ticket.CalledUtc)</MudTd>
+                <MudTd DataLabel="Encerramento">@Time(context.Ticket.ClosedUtc)</MudTd>
+                <MudTd DataLabel="Espera">@DurationFormat.Minutes(context.WaitMinutes)</MudTd>
+                <MudTd DataLabel="Atendimento">@DurationFormat.Minutes(context.ServiceMinutes)</MudTd>
+                <MudTd DataLabel="Atendido por">@(context.Operator is null ? "—" : $"{context.Operator} · {context.Desk}")</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Class="pa-4">Nenhuma senha encontrada com estes filtros.</MudText>
+            </NoRecordsContent>
+        </MudTable>
+
+        <div class="d-flex flex-wrap align-center justify-space-between gap-3 mt-3">
+            <MudText Typo="Typo.caption">@RangeText</MudText>
+            <div class="d-flex align-center gap-3">
+                <MudSelect T="int" Label="Por página" Variant="Variant.Outlined" Margin="Margin.Dense" Style="width: 110px"
+                           Value="_pageSize" ValueChanged="PageSizeChangedAsync">
+                    <MudSelectItem T="int" Value="25">25</MudSelectItem>
+                    <MudSelectItem T="int" Value="50">50</MudSelectItem>
+                    <MudSelectItem T="int" Value="100">100</MudSelectItem>
+                </MudSelect>
+                <MudPagination Count="@PageCount" Selected="_page" SelectedChanged="PageChangedAsync" Disabled="@Busy" />
+            </div>
+        </div>
+    }
+</ManagementShell>

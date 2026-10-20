@@ -1,0 +1,50 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="AppTheme.Default" />
+
+<div class="app-shell">
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudButton Href="/" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Dashboard" Class="brand-link" aria-label="Painel de Senhas">
+            <span class="d-none d-sm-inline">Painel de Senhas</span>
+        </MudButton>
+        <MudSpacer />
+        <MudButton Href="/painel" Color="Color.Inherit" Class="d-none d-sm-inline-flex">Painel</MudButton>
+        <AuthorizeView>
+            <Authorized>
+                <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reception}")" Context="reception">
+                    <MudButton Href="/emissao" Color="Color.Inherit">Emissão</MudButton>
+                </AuthorizeView>
+                <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Operator}")" Context="attendant">
+                    <MudButton Href="/atendimento" Color="Color.Inherit">Atendimento</MudButton>
+                </AuthorizeView>
+                <AuthorizeView Roles="@Roles.Admin" Context="admin">
+                    <MudButton Href="/gestao" Color="Color.Inherit">Gestão</MudButton>
+                </AuthorizeView>
+                <MudButton Href="/conta" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.AccountCircle" aria-label="Minha conta">
+                    <span class="d-none d-md-inline">@context.User.Identity?.Name</span>
+                </MudButton>
+                <form method="post" action="/conta/sair" class="logout-form">
+                    <AntiforgeryToken />
+                    <MudButton ButtonType="ButtonType.Submit" Color="Color.Inherit" Variant="Variant.Outlined">Sair</MudButton>
+                </form>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Href="/entrar" Color="Color.Inherit" Variant="Variant.Outlined">Entrar</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+            @Body
+        </MudContainer>
+        <MudText Typo="Typo.caption" Align="Align.Center" Class="pa-4 d-block">
+            Uma fila organizada. Um atendimento de cada vez. · v@Version
+        </MudText>
+    </MudMainContent>
+</MudLayout>
+</div>
+
+<div id="blazor-error-ui" role="alert">
+    A conexão foi interrompida. <a href="" class="reload">Recarregar a página</a>
+</div>

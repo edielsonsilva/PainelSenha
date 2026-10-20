@@ -1,0 +1,66 @@
+@page "/gestao/equipe"
+@attribute [Authorize(Roles = Roles.Admin)]
+@using PainelSenhas.Web.Features.Gestao
+@inherits LivePage
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Equipe • Gestão • Senha</PageTitle>
+<UiProviders />
+
+<ManagementShell Area="@ManagementShell.Team">
+    <FeedbackAlert Error="@Error" Message="@Message" />
+
+    <div class="d-flex flex-wrap align-center justify-space-between gap-3 mb-3">
+        <MudText Typo="Typo.body2">Uma conta individual para cada membro da equipe. O operador atende só os departamentos liberados para ele; o administrador também gerencia a equipe.</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonAdd" Disabled="@Busy" OnClick="NewUserAsync">
+            Novo acesso
+        </MudButton>
+    </div>
+
+    <MudTable T="UserView" Items="_users" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Outlined="true">
+        <HeaderContent>
+            <MudTh>Usuário</MudTh>
+            <MudTh>Perfil</MudTh>
+            <MudTh>Departamentos</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh Style="text-align: right">Ações</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Usuário"><strong>@context.UserName</strong></MudTd>
+            <MudTd DataLabel="Perfil">
+                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@RoleColor(context.Role)">@RoleLabel(context.Role)</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Departamentos">@DepartmentNames(context.DepartmentIds)</MudTd>
+            <MudTd DataLabel="Status">
+                <MudChip T="string" Size="Size.Small" Color="@(context.Active ? Color.Success : Color.Default)">@(context.Active ? "Ativo" : "Inativo")</MudChip>
+            </MudTd>
+            <MudTd Style="text-align: right">
+                @if (context.Role == Roles.Operator)
+                {
+                    <MudTooltip Text="Departamentos que atende">
+                        <MudIconButton Icon="@Icons.Material.Filled.AccountTree" Size="Size.Small" aria-label="Departamentos que atende"
+                                       Disabled="@Busy" OnClick="() => EditDepartmentsAsync(context)" />
+                    </MudTooltip>
+                }
+                @if (context.Role != Roles.Admin)
+                {
+                    <MudTooltip Text="Redefinir senha">
+                        <MudIconButton Icon="@Icons.Material.Filled.LockReset" Size="Size.Small" aria-label="Redefinir senha"
+                                       Disabled="@Busy" OnClick="() => ResetPasswordAsync(context)" />
+                    </MudTooltip>
+                }
+                @if (context.Id != _currentUserId)
+                {
+                    <MudTooltip Text="@(context.Active ? "Inativar acesso" : "Ativar acesso")">
+                        <MudIconButton Icon="@(context.Active ? Icons.Material.Filled.Block : Icons.Material.Filled.CheckCircle)" Size="Size.Small"
+                                       Color="@(context.Active ? Color.Warning : Color.Success)" aria-label="@(context.Active ? "Inativar acesso" : "Ativar acesso")"
+                                       Disabled="@Busy" OnClick="() => ToggleAsync(context)" />
+                    </MudTooltip>
+                }
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText Typo="Typo.body2" Class="pa-4">Nenhum acesso cadastrado.</MudText>
+        </NoRecordsContent>
+    </MudTable>
+</ManagementShell>

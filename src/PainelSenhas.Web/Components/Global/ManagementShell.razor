@@ -1,0 +1,18 @@
+<MudText Typo="Typo.overline" Color="Color.Primary">ADMINISTRAÇÃO</MudText>
+<MudText Typo="Typo.h4">Gestão do atendimento</MudText>
+<MudText Typo="Typo.body2" Class="mb-3">Acompanhe o dia, consulte o histórico e cuide dos cadastros.</MudText>
+
+<MudTabs Elevation="0"
+         Rounded="true"
+         Border="true"
+         ApplyEffectsToContainer="true"
+         Class="mb-4"
+         ActivePanelIndex="ActiveIndex"
+         ActivePanelIndexChanged="ChangeAsync">
+    @foreach (var area in Areas)
+    {
+        <MudTabPanel Text="@area.Label" Icon="@area.Icon" />
+    }
+</MudTabs>
+
+@ChildContent

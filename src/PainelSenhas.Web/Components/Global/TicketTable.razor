@@ -1,0 +1,35 @@
+<MudTable T="TicketView" Items="Items" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+    <HeaderContent>
+        <MudTh>Senha</MudTh>
+        @if (Mode == TicketTableMode.Pending)
+        {
+            <MudTh>Emitida</MudTh>
+        }
+        <MudTh>Status</MudTh>
+        @if (Mode == TicketTableMode.History)
+        {
+            <MudTh>Hora</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Senha">
+            <strong>@context.Code</strong>
+            @if (context.IsPreferential)
+            {
+                <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Filled.Accessible" Class="ml-2">Preferencial</MudChip>
+            }
+        </MudTd>
+        @if (Mode == TicketTableMode.Pending)
+        {
+            <MudTd DataLabel="Emitida">@IssuedText(context)</MudTd>
+        }
+        <MudTd DataLabel="Status">@StatusText(context.Status)</MudTd>
+        @if (Mode == TicketTableMode.History)
+        {
+            <MudTd DataLabel="Hora">@ClosedText(context)</MudTd>
+        }
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2" Class="pa-4">@EmptyText</MudText>
+    </NoRecordsContent>
+</MudTable>

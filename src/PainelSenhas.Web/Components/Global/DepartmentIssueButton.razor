@@ -1,0 +1,43 @@
+<div class="issue-wrapper">
+    <MudButton Variant="@(Preferential ? Variant.Outlined : Variant.Filled)"
+               Color="@(JustIssued ? Color.Success : Preferential ? Color.Secondary : Color.Primary)"
+               FullWidth="true"
+               Class="@(Preferential ? "issue-button issue-button-preferential" : "issue-button")"
+               Disabled="@Disabled"
+               aria-label="@($"Emitir senha {(Preferential ? "preferencial" : "comum")} para {Department.Name}")"
+               OnClick="() => OnIssue.InvokeAsync(Department.Id)">
+        <span class="issue-content">
+            @if (Preferential)
+            {
+                <span class="issue-kind">
+                    <MudIcon Icon="@Icons.Material.Filled.Accessible" Size="Size.Small" />
+                    Preferencial
+                </span>
+            }
+            else
+            {
+                <span class="issue-prefix">@Department.Prefix</span>
+                <span class="issue-name">@Department.Name</span>
+            }
+            <span class="issue-status">
+                @if (Issuing)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+                    <span>Emitindo…</span>
+                }
+                else if (JustIssued)
+                {
+                    <span>Senha emitida</span>
+                }
+                else if (Preferential)
+                {
+                    <span>@Department.PendingPreferential na fila</span>
+                }
+                else
+                {
+                    <span>@(Department.Pending - Department.PendingPreferential) na fila</span>
+                }
+            </span>
+        </span>
+    </MudButton>
+</div>
